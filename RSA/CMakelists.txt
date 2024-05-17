@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.20)
+
+# compiler and language setup
+set(CMAKE_CXX_STANDARD 20)
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+project(RSA)
+
+# fmt setup
+find_package(fmt CONFIG REQUIRED)
+
+# gmpxx setup (through PkgConfig)
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(gmpxx REQUIRED IMPORTED_TARGET gmpxx)
+
+# putting all dependencies together
+add_executable(${PROJECT_NAME} src/main.cpp src/RSA.cpp)
+
+target_include_directories(${PROJECT_NAME} PRIVATE inc)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt PkgConfig::gmpxx)
