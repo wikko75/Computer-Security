@@ -78,9 +78,9 @@ void RC4::initialize_state() noexcept
     }
 }
 
-void RC4::swap_state_values(const uint8_t i, const uint8_t j) noexcept
+void RC4::swap_state_values(const uint64_t i, const uint64_t j) noexcept
 {
-    const uint8_t temp {m_state[i]};
+    const uint64_t temp {m_state[i]};
     m_state[i] = m_state[j];
     m_state[j] = temp;
 }

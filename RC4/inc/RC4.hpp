@@ -21,7 +21,7 @@ public:
 private:
     void initialize_state() noexcept;
 
-    void swap_state_values(const uint8_t i, const uint8_t j) noexcept;
+    void swap_state_values(const uint64_t i, const uint64_t j) noexcept;
 
 private:
     std::string m_key;
