@@ -3,7 +3,13 @@
 #include <string>
 #include "RC4.hpp"
 
+
 void show_hex_rep(uint8_t msg[], uint64_t size);
+
+
+// assumption -> both messages are similar
+bool is_same_key_used(uint8_t msg1[], uint8_t msg2[], uint64_t size1, uint64_t size2);
+
 
 int main()
 {
@@ -51,15 +57,6 @@ int main()
     fmt::print("\n- {}\n- {}\n", (char*)first_msg, (char*)second_msg);
 
 
-    // if(is_same_key_used(first_msg, second_msg, rc4_1, rc4_2))
-    // {
-    //     fmt::print("Same key used!\n");
-    // }
-    // else
-    // {
-    //     fmt::print("Not the same key used!\n");
-        
-    // }
 
     uint8_t msg[] = {"pedia"};
 
@@ -79,6 +76,25 @@ int main()
 
     fmt::print("DECODE: {}\n", (char*)msg);
 
+
+    uint8_t sample_msg1[] = {"red flowers in water"};
+    uint8_t sample_msg2[] = {"red flowers at water"};
+
+    RC4 rc4_3 {"sampleKey1"};
+    RC4 rc4_4 {"sampleKey1"};
+
+    rc4_3.encrypt(sample_msg1, sizeof(sample_msg1));
+    rc4_4.encrypt(sample_msg2, sizeof(sample_msg2));
+
+    if(is_same_key_used(sample_msg1, sample_msg2, sizeof(sample_msg1), sizeof(sample_msg2)))
+    {
+        fmt::print("Same key used!\n");
+    }
+    else
+    {
+        fmt::print("Not the same key used!\n");
+    }
+
     return 0;
 
 }
@@ -92,4 +108,45 @@ void show_hex_rep( uint8_t msg[], const uint64_t size)
     }
 
     fmt::print("\n");
+}
+
+bool is_same_key_used(uint8_t msg1[], uint8_t msg2[], uint64_t size1, uint64_t size2)
+{
+    uint64_t min_size {size1 < size2 ? size1 : size2};
+    uint8_t* xor_result { new uint8_t[min_size]};
+
+    // perform XOR on msg1 and msg2 bytes
+    for (size_t i {0}; i < min_size - 1; ++i)
+    {
+        xor_result[i] = msg1[i] ^ msg2[i];
+    }
+
+    fmt::print("First Cipher ");
+    show_hex_rep(msg1, size1);
+    
+    fmt::print("Second Cipher ");
+    show_hex_rep(msg2, size2);
+
+    fmt::print("XOR ");
+    show_hex_rep(xor_result, min_size);
+
+    // count '0' in XOR_RESULT
+    uint64_t zeros {};
+    for (size_t i {0}; i < min_size; ++i)
+    {
+        if (xor_result[i] == 0)
+        {
+            ++zeros;
+        }
+    }
+    
+    fmt::print("Zeros: {}\n", zeros);
+    // if zeros / min_size (considered bytes) >> than some threshold -> return true
+    float threshold {.6f};
+    bool is_same_key { ( zeros / static_cast<float>(min_size) ) > threshold};
+    fmt::print("RATIO: {}\n",  ( zeros / static_cast<float>(min_size)));
+    
+    delete[] xor_result;
+      
+    return is_same_key; 
 }
