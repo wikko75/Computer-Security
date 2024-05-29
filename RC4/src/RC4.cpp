@@ -69,6 +69,99 @@ void RC4::print_state() const noexcept
     fmt::print("STATE: {}\n", m_state);
 }
 
+bool RC4::is_same_key_used_sm(uint8_t msg1[], uint8_t msg2[], const uint64_t size1, const uint64_t size2) noexcept
+{
+    uint64_t min_size {size1 < size2 ? size1 : size2};
+    uint8_t* xor_result { new uint8_t[min_size]};
+
+    // perform XOR on msg1 and msg2 bytes
+    for (size_t i {0}; i < min_size - 1; ++i)
+    {
+        xor_result[i] = msg1[i] ^ msg2[i];
+    }
+
+    fmt::print("First Cipher ");
+    RC4::show_hex_rep(msg1, size1);
+    
+    fmt::print("Second Cipher ");
+    RC4::show_hex_rep(msg2, size2);
+
+    fmt::print("XOR ");
+    RC4::show_hex_rep(xor_result, min_size);
+
+    // count '0' in XOR_RESULT
+    uint64_t zeros {};
+    for (size_t i {0}; i < min_size; ++i)
+    {
+        if (xor_result[i] == 0)
+        {
+            ++zeros;
+        }
+    }
+    
+    fmt::print("Zeros: {}\n", zeros);
+    // if zeros / min_size (considered bytes) >> than some threshold -> return true
+    float threshold {.6f};
+    bool is_same_key { ( zeros / static_cast<float>(min_size) ) > threshold};
+    fmt::print("RATIO: {}\n",  ( zeros / static_cast<float>(min_size)));
+    
+    delete[] xor_result;
+      
+    return is_same_key; 
+}
+
+bool RC4::is_same_key_used_dm(uint8_t msg1[], uint8_t msg2[], const uint64_t size1, const uint64_t size2) noexcept
+{
+    uint64_t min_size {size1 < size2 ? size1 : size2};
+    uint8_t* xor_result { new uint8_t[min_size]};
+
+    // perform XOR on msg1 and msg2 bytes
+    for (size_t i {0}; i < min_size - 1; ++i)
+    {
+        xor_result[i] = msg1[i] ^ msg2[i];
+    }
+
+    fmt::print("First Cipher ");
+    RC4::show_hex_rep(msg1, size1);
+    
+    fmt::print("Second Cipher ");
+    RC4::show_hex_rep(msg2, size2);
+
+    fmt::print("XOR ");
+    RC4::show_hex_rep(xor_result, min_size);
+
+    // count '0' in XOR_RESULT
+    uint64_t zeros {};
+    for (size_t i {0}; i < min_size; ++i)
+    {
+        if (xor_result[i] == 0)
+        {
+            ++zeros;
+        }
+    }
+    
+    fmt::print("Zeros: {}\n", zeros);
+    // if zeros / min_size (considered bytes) >> than some threshold -> return true
+    float threshold {.6f};
+    bool is_same_key { ( zeros / static_cast<float>(min_size) ) > threshold};
+    fmt::print("RATIO: {}\n",  ( zeros / static_cast<float>(min_size)));
+    
+    delete[] xor_result;
+      
+    return is_same_key; 
+}
+
+void RC4::show_hex_rep(uint8_t msg[], uint64_t const size) noexcept
+{
+    fmt::print("HEX: ");
+    for (int i {0}; i < size - 1; ++i)
+    {
+        fmt::print("{:x} ", msg[i]);
+    }
+
+    fmt::print("\n");
+}
+
 void RC4::initialize_state() noexcept
 {
     // create initial state ( uint8_t from 0 .. 255)
