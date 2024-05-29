@@ -4,7 +4,6 @@
 #include "RC4.hpp"
 
 
-
 int main()
 {
     uint8_t first_msg[] =  {"Hello, there!"};
@@ -48,16 +47,15 @@ int main()
 
     fmt::print("Message: {} :  {}\n", (char*)(second_msg), second_msg);
 
-    fmt::print("\n- {}\n- {}\n\n", (char*)first_msg, (char*)second_msg);
+    fmt::print("\n- {}\n- {}\n", (char*)first_msg, (char*)second_msg);
 
 
     // same key usage detection
-
     uint8_t sample_msg1[] = {"red flowers in water"};
     uint8_t sample_msg2[] = {"red flowers at water"};
 
     RC4 rc4_3 {"sampleKey1"};
-    RC4 rc4_4 {"sampleKey1"};
+    RC4 rc4_4 {"sampleKey2"};
 
     rc4_3.encrypt(sample_msg1, sizeof(sample_msg1));
     rc4_4.encrypt(sample_msg2, sizeof(sample_msg2));
